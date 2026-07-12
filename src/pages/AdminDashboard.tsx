@@ -25,6 +25,7 @@ import {
 import { motion } from 'motion/react';
 import { format } from 'date-fns';
 import AdminInvoiceManager from '../components/AdminInvoiceManager';
+import { ContentPlanner } from "../components/ContentPlanner";
 
 interface Request {
   id: string;
@@ -80,7 +81,8 @@ const AdminDashboard = () => {
   const [deliveryUrl, setDeliveryUrl] = useState('');
   const [updating, setUpdating] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'users' | 'invoices'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'messages' | 'users' | 'invoices' | 'planner'>('overview');
+  const [plannerUserId, setPlannerUserId] = useState<string>('');
 
   useEffect(() => {
     fetchData();
@@ -242,6 +244,17 @@ const AdminDashboard = () => {
             <CreditCard size={18} />
             Invoices
           </button>
+          <button 
+            onClick={() => handleTabClick('planner')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${
+              activeTab === 'planner' 
+                ? 'bg-brand-primary text-brand-secondary' 
+                : 'text-black/40 hover:bg-brand-primary hover:text-brand-secondary'
+            }`}
+          >
+            <FileText size={18} />
+            Content Planner
+          </button>
           <div className="pt-4 pb-2 px-4">
             <p className="text-[10px] font-bold uppercase tracking-widest text-black/20">System</p>
           </div>
@@ -282,7 +295,7 @@ const AdminDashboard = () => {
               <Menu size={24} />
             </button>
             <h1 className="text-3xl font-bold tracking-tight">
-              {activeTab === 'overview' ? 'Manage Requests' : activeTab === 'messages' ? 'Contact Inquiries' : activeTab === 'invoices' ? 'Invoice Management' : 'User Management'}
+              {activeTab === 'overview' ? 'Manage Requests' : activeTab === 'messages' ? 'Contact Inquiries' : activeTab === 'invoices' ? 'Invoice Management' : activeTab === 'planner' ? 'Content Planner' : 'User Management'}
             </h1>
           </div>
           <div className="flex items-center gap-4 w-full md:w-auto">
@@ -477,6 +490,29 @@ const AdminDashboard = () => {
           </div>
         ) : activeTab === 'invoices' ? (
           <AdminInvoiceManager />
+        ) : activeTab === 'planner' ? (
+          <div className="space-y-6">
+            <div className="bg-white p-6 rounded-3xl border border-black/5 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
+              <h2 className="font-bold text-xl">Client Content Planner</h2>
+              <select 
+                value={plannerUserId}
+                onChange={(e) => setPlannerUserId(e.target.value)}
+                className="w-full md:w-auto px-4 py-2 bg-black/5 rounded-xl border border-transparent outline-none focus:border-brand-primary"
+              >
+                <option value="">Select a client</option>
+                {users.map(u => (
+                  <option key={u.id} value={u.id.toString()}>{u.email}</option>
+                ))}
+              </select>
+            </div>
+            {plannerUserId ? (
+              <ContentPlanner userId={plannerUserId} isAdmin={true} />
+            ) : (
+              <div className="bg-white p-12 rounded-3xl border border-black/5 shadow-sm text-center text-black/40">
+                Please select a client from the dropdown above to view and edit their content planner.
+              </div>
+            )}
+          </div>
         ) : (
           /* Users Table */
           <div className="bg-white rounded-3xl border border-black/5 shadow-sm overflow-hidden">

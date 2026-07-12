@@ -30,6 +30,7 @@ import {
   X
 } from 'lucide-react';
 import InvoiceList from '../components/InvoiceList';
+import { ContentPlanner } from "../components/ContentPlanner";
 import ClientInvoiceUpload from '../components/ClientInvoiceUpload';
 import ClientUploadedInvoicesList from '../components/ClientUploadedInvoicesList';
 import { motion, AnimatePresence } from 'motion/react';
@@ -129,7 +130,7 @@ const Dashboard = () => {
       if (error) throw error;
       
       // Update local state to remove the deleted request
-      setRequests(requests.filter(req => req.id !== requestToDelete));
+      setRequests(prev => prev.filter(req => req.id !== requestToDelete));
     } catch (error) {
       console.error('Failed to delete request:', error);
       setInfoMessage({ title: 'Error', message: 'Failed to delete request. Please try again.' });
@@ -575,6 +576,10 @@ const Dashboard = () => {
                 Delete Account
               </button>
             </div>
+          </div>
+        ) : activeTab === 'planner' ? (
+          <div className="space-y-8">
+            <ContentPlanner userId={user?.id?.toString() || ''} />
           </div>
         ) : (
           <div className="bg-white p-20 rounded-[3rem] border border-black/5 text-center">

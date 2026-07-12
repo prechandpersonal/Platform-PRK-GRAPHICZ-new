@@ -70,3 +70,18 @@ export const userRoles = pgTable('user_roles', {
   userId: text('user_id'),
   role: text('role'),
 });
+
+export const contentPlanner = pgTable('content_planner', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: text('user_id').notNull(),
+  postDate: text('post_date'),
+  contentPillar: text('content_pillar'),
+  boost: text('boost'),
+  concept: text('concept'),
+  textOnDesign: text('text_on_design'),
+  designDescription: text('design_description'),
+  caption: text('caption'),
+  notice: text('notice'),
+  scheduledDate: text('scheduled_date'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
