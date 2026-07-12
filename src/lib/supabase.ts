@@ -2,7 +2,7 @@
 class MockSupabaseAuth {
   async getSession() {
     try {
-      const res = await fetch('/api/auth/me');
+      const res = await fetch('/api/auth/me', { credentials: 'include' });
       const text = await res.text();
       let data;
       try {
@@ -28,6 +28,7 @@ class MockSupabaseAuth {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ email, password })
       });
       const text = await res.text();
@@ -53,6 +54,7 @@ class MockSupabaseAuth {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ email, password, full_name: options?.data?.full_name })
       });
       const text = await res.text();
@@ -71,7 +73,7 @@ class MockSupabaseAuth {
   
   async signOut() {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
       return { error: null };
     } catch (e) {
       return { error: e };
@@ -130,6 +132,7 @@ class MockQueryBuilder {
       const res = await fetch(`/api/rest/${this.table}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(this.query)
       });
       const text = await res.text();
