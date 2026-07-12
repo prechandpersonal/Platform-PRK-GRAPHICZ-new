@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { localDb } from '../lib/localStorageDb';
-import { Download, Loader2, CheckCircle, XCircle, Clock, Trash2 } from 'lucide-react';
+import { Download, Loader2, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface ClientInvoice {
@@ -23,12 +22,8 @@ export default function AdminInvoiceManager() {
 
   const fetchInvoices = async () => {
     try {
-      const { data, error } = await localDb
-        .from('client_invoices')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
+      const response = await fetch('/api/client_invoices');
+      const { data } = await response.json();
       setInvoices(data || []);
     } catch (error) {
       console.error('Failed to fetch invoices:', error);
@@ -37,31 +32,14 @@ export default function AdminInvoiceManager() {
     }
   };
 
-  const handleDownload = async (fileUrl: string) => {
-    try {
-      const { data, error } = await localDb.storage
-        .from('invoices')
-        .createSignedUrl(fileUrl, 60 * 60); // 1 hour expiry
-
-      if (error) throw error;
-      if (data?.signedUrl) {
-        window.open(data.signedUrl, '_blank');
-      }
-    } catch (error) {
-      console.error('Error downloading invoice:', error);
-      alert('Failed to generate download link.');
-    }
-  };
-
   const handleStatusChange = async (id: string, newStatus: 'Pending' | 'Paid' | 'Rejected') => {
     setUpdating(id);
     try {
-      const { error } = await localDb
-        .from('client_invoices')
-        .update({ status: newStatus })
-        .eq('id', id);
-
-      if (error) throw error;
+      await fetch(`/api/client_invoices/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
       
       setInvoices(invoices.map(inv => 
         inv.id === id ? { ...inv, status: newStatus } : inv

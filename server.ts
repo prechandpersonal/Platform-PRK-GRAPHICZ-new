@@ -50,6 +50,97 @@ async function startServer() {
     }
   });
 
+  // Requests Routes
+  app.get('/api/requests', async (req, res) => {
+    try {
+      const data = await db.query.requests.findMany({
+        orderBy: desc(requests.created_at),
+      });
+      res.json({ data });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch requests' });
+    }
+  });
+
+  app.post('/api/requests', async (req, res) => {
+    try {
+      const newRow = await db.insert(requests).values(req.body).returning();
+      res.json({ data: newRow });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to insert request' });
+    }
+  });
+
+  app.put('/api/requests/:id', async (req, res) => {
+    try {
+      const updatedRow = await db.update(requests).set(req.body).where(eq(requests.id, req.params.id)).returning();
+      res.json({ data: updatedRow[0] });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update request' });
+    }
+  });
+
+  app.delete('/api/requests/:id', async (req, res) => {
+    try {
+      await db.delete(requests).where(eq(requests.id, req.params.id));
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to delete request' });
+    }
+  });
+
+  // Client Invoices Routes
+  app.get('/api/client_invoices', async (req, res) => {
+    try {
+      const data = await db.select().from(requests); // Using requests table as a substitute for client_invoices
+      res.json({ data });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch invoices' });
+    }
+  });
+
+  app.put('/api/client_invoices/:id', async (req, res) => {
+    try {
+      const updatedRow = await db.update(requests).set(req.body).where(eq(requests.id, req.params.id)).returning();
+      res.json({ data: updatedRow[0] });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update invoice' });
+    }
+  });
+
+  // Contact Submissions Routes
+  app.get('/api/contact_submissions', async (req, res) => {
+    try {
+      const data = await db.query.contact_submissions.findMany({
+        orderBy: desc(contact_submissions.created_at),
+      });
+      res.json({ data });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch contact submissions' });
+    }
+  });
+
+  app.post('/api/contact_submissions', async (req, res) => {
+    try {
+      const newRow = await db.insert(contact_submissions).values(req.body).returning();
+      res.json({ data: newRow });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to insert contact submission' });
+    }
+  });
+
+  // Users Routes
+  app.get('/api/users', async (req, res) => {
+    try {
+      const data = await db.query.users.findMany({
+        orderBy: desc(users.created_at),
+      });
+      res.json({ data });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch users' });
+    }
+  });
+
   // Vite middleware
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
