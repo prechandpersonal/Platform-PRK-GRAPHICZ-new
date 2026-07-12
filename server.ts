@@ -112,12 +112,15 @@ app.get("/api/auth/me", (req, res) => {
 // --- Dynamic REST Proxy for MockSupabase ---
 app.post("/api/rest/:table", async (req, res) => {
   try {
-    const table = req.params.table as keyof typeof schema;
-    if (!schema[table]) {
-      return res.status(400).json({ error: `Table ${table} not found` });
+    const rawTable = req.params.table;
+    const tableKey = Object.keys(schema).find(
+      key => key.toLowerCase() === rawTable.toLowerCase().replace(/_/g, '') || key === rawTable
+    );
+    if (!tableKey || !(schema as any)[tableKey]) {
+      return res.status(400).json({ error: `Table ${rawTable} not found` });
     }
     
-    const dbTable = schema[table] as any;
+    const dbTable = (schema as any)[tableKey] as any;
     const { type, data, filters, order, single } = req.body;
 
     const getColumnKey = (colName: string) => {

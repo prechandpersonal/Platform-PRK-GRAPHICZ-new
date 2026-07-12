@@ -3,7 +3,13 @@ class MockSupabaseAuth {
   async getSession() {
     try {
       const res = await fetch('/api/auth/me');
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        return { data: { session: null }, error: { message: `Server error: ${res.status} ${text.substring(0, 50)}` } };
+      }
       if (data.user) {
         return { data: { session: { user: data.user } }, error: null };
       }
@@ -24,8 +30,14 @@ class MockSupabaseAuth {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-      const data = await res.json();
-      if (!res.ok) return { data: null, error: { message: data.error } };
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        return { data: null, error: { message: `Server error: ${res.status} ${text.substring(0, 50)}` } };
+      }
+      if (!res.ok) return { data: null, error: { message: data.error || 'Login failed' } };
       return { data: { user: data.user }, error: null };
     } catch (e: any) {
       return { data: null, error: { message: e.message } };
@@ -43,8 +55,14 @@ class MockSupabaseAuth {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, full_name: options?.data?.full_name })
       });
-      const data = await res.json();
-      if (!res.ok) return { data: null, error: { message: data.error } };
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        return { data: null, error: { message: `Server error: ${res.status} ${text.substring(0, 50)}` } };
+      }
+      if (!res.ok) return { data: null, error: { message: data.error || 'Registration failed' } };
       return { data: { user: data.user }, error: null };
     } catch (e: any) {
       return { data: null, error: { message: e.message } };
@@ -114,9 +132,15 @@ class MockQueryBuilder {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(this.query)
       });
-      const result = await res.json();
+      const text = await res.text();
+      let result;
+      try {
+        result = JSON.parse(text);
+      } catch (e) {
+        return resolve({ data: null, error: { message: `Server error: ${res.status} ${text.substring(0, 50)}` } });
+      }
       if (!res.ok) {
-        return resolve({ data: null, error: { message: result.error } });
+        return resolve({ data: null, error: { message: result.error || 'Request failed' } });
       }
       return resolve({ data: result.data, error: null });
     } catch (e) {
