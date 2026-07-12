@@ -110,7 +110,7 @@ app.get("/api/auth/me", (req, res) => {
 });
 
 // --- Dynamic REST Proxy for MockSupabase ---
-app.post("/api/rest/:table", async (req, res) => {
+app.all(["/api/rest/:table", "/api/rest/:table/:id"], async (req, res) => {
   try {
     const rawTable = req.params.table;
     const tableKey = Object.keys(schema).find(
@@ -121,7 +121,21 @@ app.post("/api/rest/:table", async (req, res) => {
     }
     
     const dbTable = (schema as any)[tableKey] as any;
-    const { type, data, filters, order, single } = req.body;
+    let { type, data, filters, order, single } = req.body || {};
+
+    if (!type) {
+      if (req.method === 'GET') type = 'select';
+      else if (req.method === 'POST') type = 'insert';
+      else if (req.method === 'PUT' || req.method === 'PATCH') type = 'update';
+      else if (req.method === 'DELETE') type = 'delete';
+    }
+
+    if (req.params.id) {
+      filters = filters || [];
+      if (!filters.find((f: any) => f.col === 'id')) {
+        filters.push({ col: 'id', val: req.params.id, op: 'eq' });
+      }
+    }
 
     const getColumnKey = (colName: string) => {
       if (dbTable[colName]) return colName;
