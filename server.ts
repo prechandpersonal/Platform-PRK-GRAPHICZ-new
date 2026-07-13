@@ -14,7 +14,7 @@ async function startServer() {
   app.get('/api/content_planner/:userId', async (req, res) => {
     try {
       const data = await db.query.content_planner.findMany({
-        where: eq(content_planner.user_id, req.params.userId),
+        where: eq(content_planner.user_id, Number(req.params.userId)),
         orderBy: desc(content_planner.created_at),
       });
       res.json({ data });
@@ -25,7 +25,8 @@ async function startServer() {
 
   app.post('/api/content_planner', async (req, res) => {
     try {
-      const newRow = await db.insert(content_planner).values(req.body).returning();
+      const payload = { ...req.body, user_id: Number(req.body.user_id) };
+      const newRow = await db.insert(content_planner).values(payload).returning();
       res.json({ data: newRow });
     } catch (error) {
       res.status(500).json({ error: 'Failed to insert' });
@@ -64,7 +65,8 @@ async function startServer() {
 
   app.post('/api/requests', async (req, res) => {
     try {
-      const newRow = await db.insert(requests).values(req.body).returning();
+      const payload = { ...req.body, user_id: req.body.user_id ? Number(req.body.user_id) : undefined };
+      const newRow = await db.insert(requests).values(payload).returning();
       res.json({ data: newRow });
     } catch (error) {
       res.status(500).json({ error: 'Failed to insert request' });
@@ -145,6 +147,35 @@ async function startServer() {
     }
   });
 
+  app.post('/api/sync-user', async (req, res) => {
+    try {
+      const { email, full_name, role } = req.body;
+      let user = await db.query.users.findFirst({
+        where: eq(users.email, email)
+      });
+      if (!user) {
+        const newUser = await db.insert(users).values({
+          email,
+          full_name,
+          role: role || 'client',
+          subscription_status: 'free',
+          is_verified: false
+        }).returning();
+        user = newUser[0];
+      } else {
+        const updated = await db.update(users).set({ 
+          full_name: full_name || user.full_name,
+          role: role || user.role 
+        }).where(eq(users.id, user.id)).returning();
+        user = updated[0];
+      }
+      res.json({ data: user });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to sync user' });
+    }
+  });
+
   // Users Routes
   app.get('/api/users', async (req, res) => {
     try {
@@ -160,7 +191,7 @@ async function startServer() {
 
   app.put('/api/users/:id', async (req, res) => {
     try {
-      const updatedRow = await db.update(users).set(req.body).where(eq(users.id, req.params.id)).returning();
+      const updatedRow = await db.update(users).set(req.body).where(eq(users.id, Number(req.params.id))).returning();
       res.json({ data: updatedRow[0] });
     } catch (error) {
       res.status(500).json({ error: 'Failed to update user' });

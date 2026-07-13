@@ -27,33 +27,46 @@ const Login = () => {
     }
   }, [user, navigate]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
-    // Mock login logic
-    setTimeout(() => {
-      setLoading(false);
-      // Hardcoded super admin
-      if (email === 'prkgraphicz@gmail.com') {
-         login('dummy-token', { id: 'admin-123', email, role: 'admin', full_name: 'Super Admin' });
-         return;
-      }
+    try {
+      let roleToSync = loginType;
+      let fullName = 'Test User';
       
-      // Treat anyone as normal client unless they select admin mode
-      if (loginType === 'admin' && email !== 'admin@example.com') {
+      // Hardcoded super admin logic
+      if (email === 'prkgraphicz@gmail.com') {
+         roleToSync = 'admin';
+         fullName = 'Super Admin';
+      } else if (loginType === 'admin' && email !== 'admin@example.com') {
          setError('Invalid admin credentials. (Hint: try prkgraphicz@gmail.com)');
+         setLoading(false);
          return;
       }
 
-      login('dummy-token', {
-         id: 'user-123',
-         email,
-         role: loginType,
-         full_name: 'Test User'
+      const response = await fetch('/api/sync-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, full_name: fullName, role: roleToSync })
       });
-    }, 500);
+      
+      const { data } = await response.json();
+      if (!data) throw new Error('Failed to sync user');
+
+      login('dummy-token', {
+         id: String(data.id),
+         email: data.email,
+         role: data.role,
+         full_name: data.full_name
+      });
+    } catch (err) {
+      console.error(err);
+      setError('An error occurred while logging in.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

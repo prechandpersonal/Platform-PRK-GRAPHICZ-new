@@ -72,7 +72,7 @@ const Register = () => {
       
       if (!data) throw new Error('Registration failed');
       
-      login('dummy-token', data);
+      login('dummy-token', { ...data, id: String(data.id) });
       setStep('confirm');
     } catch (err) {
       setError('Registration failed');
