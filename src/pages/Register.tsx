@@ -66,16 +66,19 @@ const Register = () => {
       const response = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, full_name: fullName, role: 'client' }),
+        body: JSON.stringify({ email, password, full_name: fullName, role: 'client' }),
       });
-      const { data } = await response.json();
+      const dataResponse = await response.json();
       
-      if (!data) throw new Error('Registration failed');
+      if (!response.ok) {
+        throw new Error(dataResponse.error || 'Registration failed');
+      }
       
-      login('dummy-token', { ...data, id: String(data.id) });
+      const { data } = dataResponse;
+      login(data.token, { ...data.user, id: String(data.user.id) });
       setStep('confirm');
-    } catch (err) {
-      setError('Registration failed');
+    } catch (err: any) {
+      setError(err.message || 'Registration failed');
     } finally {
       setLoading(false);
     }

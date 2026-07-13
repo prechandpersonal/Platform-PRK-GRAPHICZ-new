@@ -33,37 +33,36 @@ const Login = () => {
     setError('');
 
     try {
-      let roleToSync = loginType;
-      let fullName = 'Test User';
-      
-      // Hardcoded super admin logic
-      if (email === 'prkgraphicz@gmail.com') {
-         roleToSync = 'admin';
-         fullName = 'Super Admin';
-      } else if (loginType === 'admin' && email !== 'admin@example.com') {
-         setError('Invalid admin credentials. (Hint: try prkgraphicz@gmail.com)');
-         setLoading(false);
-         return;
-      }
-
-      const response = await fetch('/api/sync-user', {
+      const response = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, full_name: fullName, role: roleToSync })
+        body: JSON.stringify({ email, password })
       });
       
-      const { data } = await response.json();
-      if (!data) throw new Error('Failed to sync user');
+      const dataResponse = await response.json();
+      if (!response.ok) {
+        throw new Error(dataResponse.error || 'Failed to login');
+      }
 
-      login('dummy-token', {
-         id: String(data.id),
-         email: data.email,
-         role: data.role,
-         full_name: data.full_name
+      const { data } = dataResponse;
+
+      // Make sure admin logs in via client portal if they haven't explicitly set their role to admin and the role isn't admin
+      if (loginType === 'admin' && data.user.role !== 'admin') {
+        throw new Error('This account does not have admin privileges');
+      }
+      if (loginType === 'client' && data.user.role === 'admin') {
+        // Technically an admin can log in as a client, but we'll allow it and just log them in as admin
+      }
+
+      login(data.token, {
+         id: String(data.user.id),
+         email: data.user.email,
+         role: data.user.role,
+         full_name: data.user.full_name
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setError('An error occurred while logging in.');
+      setError(err.message || 'An error occurred while logging in.');
     } finally {
       setLoading(false);
     }

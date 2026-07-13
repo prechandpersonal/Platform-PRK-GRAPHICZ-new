@@ -4,6 +4,8 @@ import { createServer as createViteServer } from 'vite';
 import { db } from './src/db';
 import { content_planner, requests, contact_submissions, users } from './src/db/schema';
 import { eq, desc } from 'drizzle-orm';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 async function startServer() {
   const app = express();
@@ -133,17 +135,85 @@ async function startServer() {
 
   app.post('/api/register', async (req, res) => {
     try {
-      const { email, full_name, role } = req.body;
+      const { email, password, full_name, role } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required' });
+      }
+
+      // Check if user already exists
+      const existingUser = await db.query.users.findFirst({
+        where: eq(users.email, email)
+      });
+
+      if (existingUser) {
+        return res.status(409).json({ error: 'User with this email already exists' });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const passwordHash = await bcrypt.hash(password, salt);
+
       const newUser = await db.insert(users).values({
         email,
+        password_hash: passwordHash,
         full_name,
         role: role || 'client',
         subscription_status: 'free',
         is_verified: false
       }).returning();
-      res.json({ data: newUser[0] });
+      
+      // Return user without password hash
+      const userToReturn = { ...newUser[0] };
+      delete (userToReturn as any).password_hash;
+      
+      const token = jwt.sign(
+        { id: userToReturn.id, email: userToReturn.email, role: userToReturn.role },
+        process.env.JWT_SECRET || 'fallback-secret-key-do-not-use-in-prod',
+        { expiresIn: '7d' }
+      );
+      
+      res.json({ data: { token, user: userToReturn } });
+    } catch (error: any) {
+      console.error("Register error:", error);
+      res.status(500).json({ error: 'Failed to register user: ' + (error.message || String(error)) });
+    }
+  });
+
+  app.post('/api/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required' });
+      }
+
+      const user = await db.query.users.findFirst({
+        where: eq(users.email, email)
+      });
+
+      if (!user || !user.password_hash) {
+        return res.status(401).json({ error: 'Invalid email or password' });
+      }
+
+      const isValid = await bcrypt.compare(password, user.password_hash);
+      
+      if (!isValid) {
+        return res.status(401).json({ error: 'Invalid email or password' });
+      }
+
+      const token = jwt.sign(
+        { id: user.id, email: user.email, role: user.role },
+        process.env.JWT_SECRET || 'fallback-secret-key-do-not-use-in-prod',
+        { expiresIn: '7d' }
+      );
+      
+      const userToReturn = { ...user };
+      delete (userToReturn as any).password_hash;
+      
+      res.json({ data: { token, user: userToReturn } });
     } catch (error) {
-      res.status(500).json({ error: 'Failed to register user' });
+      console.error("Login error:", error);
+      res.status(500).json({ error: 'Failed to login' });
     }
   });
 
@@ -169,7 +239,11 @@ async function startServer() {
         }).where(eq(users.id, user.id)).returning();
         user = updated[0];
       }
-      res.json({ data: user });
+      // Remove password hash from response
+      const userToReturn = { ...user };
+      delete (userToReturn as any).password_hash;
+      
+      res.json({ data: userToReturn });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Failed to sync user' });
@@ -182,8 +256,12 @@ async function startServer() {
       const data = await db.query.users.findMany({
         orderBy: desc(users.created_at),
       });
-      console.log("Users in DB:", data);
-      res.json({ data });
+      const sanitizedData = data.map(user => {
+        const { password_hash, ...rest } = user;
+        return rest;
+      });
+      console.log("Users in DB:", sanitizedData.length);
+      res.json({ data: sanitizedData });
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch users' });
     }

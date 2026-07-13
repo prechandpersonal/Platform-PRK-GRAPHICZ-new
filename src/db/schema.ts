@@ -3,6 +3,7 @@ import { pgTable, text, timestamp, uuid, boolean, integer, serial } from 'drizzl
 export const users = pgTable('users', {
   id: serial('id').primaryKey(), // Changed to serial based on error
   email: text('email').notNull().unique(),
+  password_hash: text('password_hash'),
   full_name: text('full_name'),
   role: text('role').default('client').notNull(),
   subscription_status: text('subscription_status').default('free').notNull(),
