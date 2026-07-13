@@ -18,6 +18,84 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
+// Helper functions for password security
+function isPasswordStrong(password: string): boolean {
+  if (!password || password.length < 8) return false;
+  const hasUpper = /[A-Z]/.test(password);
+  const hasLower = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecial = /[^A-Za-z0-9]/.test(password);
+  return hasUpper && hasLower && hasNumber && hasSpecial;
+}
+
+function authenticateToken(req: any, res: any, next: any) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ error: 'Access token required' });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret-key-do-not-use-in-prod', (err: any, decoded: any) => {
+    if (err) {
+      return res.status(403).json({ error: 'Invalid or expired token' });
+    }
+    req.user = decoded;
+    next();
+  });
+}
+
+// Password Change Route
+app.post('/api/change-password', authenticateToken, async (req: any, res: any) => {
+  try {
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
+    const userId = req.user.id;
+
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({ error: 'New passwords do not match' });
+    }
+
+    if (!isPasswordStrong(newPassword)) {
+      return res.status(400).json({ error: 'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.' });
+    }
+
+    // Find user in the database
+    const user = await db.query.users.findFirst({
+      where: eq(users.id, Number(userId))
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Verify current password
+    if (!user.password_hash) {
+      return res.status(400).json({ error: 'Invalid current password configuration' });
+    }
+
+    const isValid = await bcrypt.compare(currentPassword, user.password_hash);
+    if (!isValid) {
+      return res.status(400).json({ error: 'Invalid current password' });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(newPassword, salt);
+
+    // Update password hash in database
+    await db.update(users).set({ password_hash: passwordHash }).where(eq(users.id, Number(userId)));
+
+    res.json({ success: true, message: 'Password changed successfully' });
+  } catch (error: any) {
+    console.error("Change password error:", error);
+    res.status(500).json({ error: 'Failed to change password: ' + (error.message || String(error)) });
+  }
+});
+
 // Content Planner Routes
 app.get('/api/content_planner/:userId', async (req, res) => {
   try {
@@ -145,6 +223,10 @@ app.post('/api/register', async (req, res) => {
     
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    if (!isPasswordStrong(password)) {
+      return res.status(400).json({ error: 'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.' });
     }
 
     const existingUser = await db.query.users.findFirst({

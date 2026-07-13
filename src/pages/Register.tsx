@@ -56,8 +56,15 @@ const Register = () => {
       return;
     }
 
-    if (strength.score < 2) {
-      setError('Please choose a stronger password');
+    const has8Chars = password.length >= 8;
+    const hasUpper = /[A-Z]/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[^A-Za-z0-9]/.test(password);
+    const isStrong = has8Chars && hasUpper && hasLower && hasNumber && hasSpecial;
+
+    if (!isStrong) {
+      setError('Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.');
       setLoading(false);
       return;
     }

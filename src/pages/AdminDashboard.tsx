@@ -20,7 +20,8 @@ import {
   User,
   Menu,
   X,
-  CreditCard
+  CreditCard,
+  Key
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { format } from 'date-fns';
@@ -275,6 +276,13 @@ const AdminDashboard = () => {
           >
             <User size={18} />
             View as Client
+          </Link>
+          <Link 
+            to="/change-password"
+            className="w-full flex items-center gap-3 px-4 py-3 text-black/40 hover:bg-brand-primary hover:text-brand-secondary rounded-xl font-bold text-sm transition-all"
+          >
+            <Key size={18} />
+            Change Password
           </Link>
         </nav>
         <div className="p-4 border-t border-black/5">

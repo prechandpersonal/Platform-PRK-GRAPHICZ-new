@@ -27,7 +27,8 @@ import {
   LayoutDashboard,
   Trash2,
   Menu,
-  X
+  X,
+  Key
 } from 'lucide-react';
 import InvoiceList from '../components/InvoiceList';
 import { ContentPlanner } from "../components/ContentPlanner";
@@ -271,6 +272,13 @@ const Dashboard = () => {
             <Settings size={18} />
             Settings
           </button>
+          <Link 
+            to="/change-password"
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-black/40 hover:bg-brand-primary hover:text-brand-secondary rounded-xl font-bold text-sm transition-all animate-fade-in"
+          >
+            <Key size={18} />
+            Change Password
+          </Link>
         </nav>
         <div className="p-4 border-t border-black/5">
           <button 
