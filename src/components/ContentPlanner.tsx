@@ -72,10 +72,12 @@ export function ContentPlanner({ userId, isAdmin = false }: { userId: string, is
           'Authorization': `Bearer ${token}`
         }
       });
-      const { data } = await response.json();
-      setRows(data || []);
+      const result = await response.json();
+      const plannerData = result && Array.isArray(result.data) ? result.data : [];
+      setRows(plannerData);
     } catch (err) {
       console.error('Error fetching content planner:', err);
+      setRows([]);
     } finally {
       setLoading(false);
     }
@@ -89,10 +91,12 @@ export function ContentPlanner({ userId, isAdmin = false }: { userId: string, is
           'Authorization': `Bearer ${token}`
         }
       });
-      const data = await response.json();
-      setClients(data || []);
+      const result = await response.json();
+      const clientsData = result && Array.isArray(result.data) ? result.data : [];
+      setClients(clientsData);
     } catch (err) {
       console.error('Failed to fetch clients:', err);
+      setClients([]);
     }
   };
 
@@ -147,7 +151,7 @@ export function ContentPlanner({ userId, isAdmin = false }: { userId: string, is
       const method = isEditing ? 'PUT' : 'POST';
 
       // Automatically find client name and email for visual updates
-      const selectedClient = clients.find(c => c.id === Number(formState.client_id));
+      const selectedClient = Array.isArray(clients) ? clients.find(c => c.id === Number(formState.client_id)) : undefined;
       const payload = {
         ...formState,
         // Fallback for user_id to match client_id
@@ -229,10 +233,10 @@ export function ContentPlanner({ userId, isAdmin = false }: { userId: string, is
     }
   };
 
-  const filteredRows = rows.filter(row => {
+  const filteredRows = Array.isArray(rows) ? rows.filter(row => {
     if (statusFilter === 'all') return true;
     return row.status?.toLowerCase() === statusFilter.toLowerCase();
-  });
+  }) : [];
 
   if (loading) {
     return (
@@ -243,7 +247,7 @@ export function ContentPlanner({ userId, isAdmin = false }: { userId: string, is
     );
   }
 
-  const currentClientDetail = clients.find(c => c.id === Number(formState.client_id));
+  const currentClientDetail = Array.isArray(clients) ? clients.find(c => c.id === Number(formState.client_id)) : undefined;
 
   return (
     <div className="space-y-8 relative">
@@ -569,7 +573,7 @@ export function ContentPlanner({ userId, isAdmin = false }: { userId: string, is
                         required
                       >
                         <option value="">Select a Client</option>
-                        {clients.map(c => (
+                        {Array.isArray(clients) && clients.map(c => (
                           <option key={c.id} value={c.id}>{c.full_name || c.email} ({c.email})</option>
                         ))}
                       </select>
