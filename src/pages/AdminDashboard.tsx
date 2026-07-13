@@ -86,7 +86,7 @@ interface UserRecord {
 }
 
 const AdminDashboard = () => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const [requests, setRequests] = useState<Request[]>([]);
   const [contacts, setContacts] = useState<ContactSubmission[]>([]);
   const [users, setUsers] = useState<UserRecord[]>([]);
@@ -221,7 +221,9 @@ const AdminDashboard = () => {
         <div className="p-6 border-b border-black/5 flex items-center justify-between">
           <Logo />
           <div className="flex items-center gap-2">
-            <span className="px-2 py-1 bg-brand-primary text-brand-secondary text-[8px] font-black uppercase tracking-tighter rounded-md">Admin</span>
+            <span className="px-2 py-1 bg-brand-primary text-brand-secondary text-[8px] font-black uppercase tracking-tighter rounded-md">
+              {user?.role === 'super_admin' ? 'Super Admin' : 'Admin'}
+            </span>
             <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden p-2 text-black/40 hover:text-black">
               <X size={20} />
             </button>
@@ -668,13 +670,14 @@ const AdminDashboard = () => {
                 <select 
                   value={selectedUser.role}
                   onChange={(e) => {
-                    const newRole = e.target.value as 'admin' | 'client';
+                    const newRole = e.target.value as 'admin' | 'client' | 'super_admin';
                     setSelectedUser({ ...selectedUser, role: newRole });
                   }}
                   className="w-full px-4 py-4 bg-black/5 border border-transparent rounded-2xl outline-none font-medium"
                 >
                   <option value="client">Client</option>
                   <option value="admin">Admin</option>
+                  <option value="super_admin">Super Admin</option>
                 </select>
               </div>
               

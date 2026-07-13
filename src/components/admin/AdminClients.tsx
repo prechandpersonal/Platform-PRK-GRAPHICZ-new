@@ -164,13 +164,15 @@ export const AdminClients: React.FC = () => {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-widest border ${
-                        client.role === 'admin' 
+                        client.role === 'super_admin'
+                          ? 'bg-red-100 text-red-700 border-red-200'
+                          : client.role === 'admin' 
                           ? 'bg-blue-100 text-blue-700 border-blue-200' 
                           : client.role === 'designer'
                           ? 'bg-purple-100 text-purple-700 border-purple-200'
                           : 'bg-gray-100 text-black/60 border-gray-200'
                       }`}>
-                        {client.role}
+                        {client.role === 'super_admin' ? 'Super Admin' : client.role.charAt(0).toUpperCase() + client.role.slice(1)}
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -247,6 +249,7 @@ export const AdminClients: React.FC = () => {
                   <option value="client">Client</option>
                   <option value="designer">Designer</option>
                   <option value="admin">Admin</option>
+                  <option value="super_admin">Super Admin</option>
                 </select>
               </div>
 
