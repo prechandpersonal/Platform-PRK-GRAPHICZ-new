@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, ArrowRight, ArrowLeft, Loader2, User, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import Logo from '../components/Logo';
-import { AuthDivider } from '../components/AuthDivider';
+import AuthDivider from '../components/AuthDivider';
 import { useAuth } from '../context/AuthContext';
 
 const validatePassword = (password: string) => {

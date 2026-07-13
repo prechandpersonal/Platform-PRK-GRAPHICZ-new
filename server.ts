@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import cors from 'cors';
 import { createServer as createViteServer } from 'vite';
 import { db } from './src/db';
 import { content_planner, requests, contact_submissions, users } from './src/db/schema';
@@ -9,8 +10,18 @@ import jwt from 'jsonwebtoken';
 
 async function startServer() {
   const app = express();
+  
+  // Configure CORS
+  const corsOptions = {
+    origin: process.env.NODE_ENV === 'production' 
+      ? ['https://prkgraphicz.vercel.app'] 
+      : ['http://localhost:5173', 'http://localhost:3000'],
+    credentials: true
+  };
+  app.use(cors(corsOptions));
+  
   app.use(express.json());
-  const PORT = 3000;
+  const PORT = process.env.PORT || 3000;
 
   // Content Planner Routes
   app.get('/api/content_planner/:userId', async (req, res) => {
@@ -291,7 +302,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  app.listen(Number(PORT), '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
   });
 }

@@ -59,23 +59,9 @@ export default function AdminInvoiceManager() {
 
     setUpdating(id);
     try {
-      // 1. Delete from storage
-      const { error: storageError } = await localDb.storage
-        .from('invoices')
-        .remove([fileUrl]);
-
-      if (storageError) {
-        console.error('Error deleting file from storage:', storageError);
-      }
-
-      // 2. Delete from database
-      const { error: dbError } = await localDb
-        .from('client_invoices')
-        .delete()
-        .eq('id', id);
-
-      if (dbError) throw dbError;
-
+      await fetch(`/api/client_invoices/${id}`, {
+        method: 'DELETE',
+      });
       // 3. Update state
       setInvoices(invoices.filter(inv => inv.id !== id));
     } catch (error: any) {
@@ -84,6 +70,10 @@ export default function AdminInvoiceManager() {
     } finally {
       setUpdating(null);
     }
+  };
+
+  const handleDownload = (fileUrl: string) => {
+    window.open(fileUrl, '_blank');
   };
 
   const getStatusColor = (status: string) => {

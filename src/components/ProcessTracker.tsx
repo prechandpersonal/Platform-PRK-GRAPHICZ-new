@@ -68,7 +68,7 @@ const ProcessTracker: React.FC<ProcessTrackerProps> = ({ userId }) => {
           table: 'requests',
           filter: `user_id=eq.${userId}`,
         },
-        (payload) => {
+        (payload: any) => {
           console.log('Real-time update ontvangen:', payload);
           setRequests((currentRequests) =>
             currentRequests.map((req) =>
@@ -81,7 +81,7 @@ const ProcessTracker: React.FC<ProcessTrackerProps> = ({ userId }) => {
 
     // Cleanup bij unmount
     return () => {
-      localDb.removeChannel(channel);
+      localDb.removeChannel(channel as any);
     };
   }, [userId]);
 

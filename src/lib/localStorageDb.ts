@@ -30,8 +30,8 @@ export const localDb = {
         single: () => {
           return Promise.resolve({ data: result[0] || null, error: null });
         },
-        then: (resolve: any) => {
-          resolve({ data: result, error: null });
+        then<TResult1 = any, TResult2 = never>(resolve?: ((value: any) => TResult1 | PromiseLike<TResult1>) | undefined, reject?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined): Promise<TResult1 | TResult2> {
+          return Promise.resolve({ data: result, error: null }).then(resolve, reject);
         }
       };
       return chain;
@@ -66,7 +66,7 @@ export const localDb = {
       const chain = {
         eq: (col: string, val: any) => {
           const data = getTable(table);
-          setTable(table, data.filter(d => d[col] !== val));
+          setTable(table, data.filter((d: any) => d[col] !== val));
           return Promise.resolve({ error: null });
         }
       };
@@ -82,7 +82,9 @@ export const localDb = {
     })
   },
   channel: (name: string) => ({
-    on: () => ({ subscribe: () => {} })
+    on: (...args: any[]) => ({
+      subscribe: () => {}
+    })
   }),
-  removeChannel: () => {}
+  removeChannel: (channel?: any) => {}
 };

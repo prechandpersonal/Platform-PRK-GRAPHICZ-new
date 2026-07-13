@@ -108,7 +108,7 @@ const AdminDashboard = () => {
       setStats({
         totalUsers: { count: usersData.length },
         totalRequests: { count: reqData.length },
-        pendingRequests: { count: reqData.filter(r => r.status === 'pending').length }
+        pendingRequests: { count: reqData.filter((r: any) => r.status === 'pending').length }
       });
     } catch (error) {
       console.error('Failed to fetch admin data:', error);
