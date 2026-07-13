@@ -38,6 +38,7 @@ export const contact_submissions = pgTable('contact_submissions', {
 export const content_planner = pgTable('content_planner', {
   id: uuid('id').primaryKey().defaultRandom(),
   user_id: integer('user_id').references(() => users.id).notNull(),
+  client_id: integer('client_id').references(() => users.id),
   post_date: text('post_date'),
   content_pillar: text('content_pillar'),
   boost: text('boost'),
@@ -47,5 +48,9 @@ export const content_planner = pgTable('content_planner', {
   caption: text('caption'),
   notice: text('notice'),
   scheduled_date: text('scheduled_date'),
+  title: text('title'),
+  content_type: text('content_type'),
+  description: text('description'),
+  status: text('status').default('pending').notNull(),
   created_at: timestamp('created_at').defaultNow().notNull(),
 });

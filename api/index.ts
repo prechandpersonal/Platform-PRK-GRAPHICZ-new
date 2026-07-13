@@ -97,43 +97,213 @@ app.post('/api/change-password', authenticateToken, async (req: any, res: any) =
 });
 
 // Content Planner Routes
-app.get('/api/content_planner/:userId', async (req, res) => {
+app.get('/api/content_planner/:userId', authenticateToken, async (req: any, res: any) => {
   try {
-    const data = await db.query.content_planner.findMany({
-      where: eq(content_planner.user_id, Number(req.params.userId)),
-      orderBy: desc(content_planner.created_at),
-    });
+    const userId = Number(req.params.userId);
+    const authUserId = req.user.id;
+    const isClient = req.user.role !== 'admin';
+
+    // If client, force fetch only their own items
+    const targetUserId = isClient ? authUserId : userId;
+
+    const data = await db.select({
+      id: content_planner.id,
+      user_id: content_planner.user_id,
+      client_id: content_planner.client_id,
+      post_date: content_planner.post_date,
+      content_pillar: content_planner.content_pillar,
+      boost: content_planner.boost,
+      concept: content_planner.concept,
+      text_on_design: content_planner.text_on_design,
+      design_description: content_planner.design_description,
+      caption: content_planner.caption,
+      notice: content_planner.notice,
+      scheduled_date: content_planner.scheduled_date,
+      title: content_planner.title,
+      content_type: content_planner.content_type,
+      description: content_planner.description,
+      status: content_planner.status,
+      created_at: content_planner.created_at,
+      client_name: users.full_name,
+      client_email: users.email
+    })
+    .from(content_planner)
+    .leftJoin(users, eq(content_planner.client_id, users.id))
+    .where(eq(content_planner.client_id, targetUserId))
+    .orderBy(desc(content_planner.created_at));
+
     res.json({ data });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch' });
+  } catch (error: any) {
+    console.error("Fetch content planner error:", error);
+    res.status(500).json({ error: 'Failed to fetch content planner: ' + error.message });
   }
 });
 
-app.post('/api/content_planner', async (req, res) => {
+app.post('/api/content_planner', authenticateToken, async (req: any, res: any) => {
   try {
-    const payload = { ...req.body, user_id: Number(req.body.user_id) };
+    const isClient = req.user.role !== 'admin';
+    let clientId = req.body.client_id ? Number(req.body.client_id) : undefined;
+    
+    if (isClient) {
+      clientId = req.user.id;
+    } else if (!clientId && req.body.user_id) {
+      clientId = Number(req.body.user_id);
+    }
+
+    if (!clientId) {
+      return res.status(400).json({ error: 'client_id is required' });
+    }
+
+    const payload = {
+      user_id: req.user.id,
+      client_id: clientId,
+      post_date: req.body.post_date || null,
+      content_pillar: req.body.content_pillar || null,
+      boost: req.body.boost || null,
+      concept: req.body.concept || null,
+      text_on_design: req.body.text_on_design || null,
+      design_description: req.body.design_description || null,
+      caption: req.body.caption || null,
+      notice: req.body.notice || null,
+      scheduled_date: req.body.scheduled_date || null,
+      title: req.body.title || null,
+      content_type: req.body.content_type || null,
+      description: req.body.description || null,
+      status: req.body.status || 'pending',
+    };
+
     const newRow = await db.insert(content_planner).values(payload).returning();
-    res.json({ data: newRow });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to insert' });
+    
+    const joinedRow = await db.select({
+      id: content_planner.id,
+      user_id: content_planner.user_id,
+      client_id: content_planner.client_id,
+      post_date: content_planner.post_date,
+      content_pillar: content_planner.content_pillar,
+      boost: content_planner.boost,
+      concept: content_planner.concept,
+      text_on_design: content_planner.text_on_design,
+      design_description: content_planner.design_description,
+      caption: content_planner.caption,
+      notice: content_planner.notice,
+      scheduled_date: content_planner.scheduled_date,
+      title: content_planner.title,
+      content_type: content_planner.content_type,
+      description: content_planner.description,
+      status: content_planner.status,
+      created_at: content_planner.created_at,
+      client_name: users.full_name,
+      client_email: users.email
+    })
+    .from(content_planner)
+    .leftJoin(users, eq(content_planner.client_id, users.id))
+    .where(eq(content_planner.id, newRow[0].id));
+
+    res.json({ data: joinedRow });
+  } catch (error: any) {
+    console.error("Create content planner error:", error);
+    res.status(500).json({ error: 'Failed to insert: ' + error.message });
   }
 });
 
-app.put('/api/content_planner/:id', async (req, res) => {
+app.put('/api/content_planner/:id', authenticateToken, async (req: any, res: any) => {
   try {
-    const updatedRow = await db.update(content_planner).set(req.body).where(eq(content_planner.id, req.params.id)).returning();
-    res.json({ data: updatedRow[0] });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to update' });
+    const isClient = req.user.role !== 'admin';
+    const rowId = req.params.id;
+
+    const existing = await db.query.content_planner.findFirst({
+      where: eq(content_planner.id, rowId)
+    });
+
+    if (!existing) {
+      return res.status(404).json({ error: 'Content planner item not found' });
+    }
+
+    if (isClient && existing.client_id !== req.user.id && existing.user_id !== req.user.id) {
+      return res.status(403).json({ error: 'Forbidden: You do not have permission to update this item' });
+    }
+
+    const updatePayload: any = {};
+    const allowedFields = [
+      'post_date',
+      'content_pillar',
+      'boost',
+      'concept',
+      'text_on_design',
+      'design_description',
+      'caption',
+      'notice',
+      'scheduled_date',
+      'title',
+      'content_type',
+      'description',
+      'status'
+    ];
+
+    for (const field of allowedFields) {
+      if (req.body[field] !== undefined) {
+        updatePayload[field] = req.body[field];
+      }
+    }
+
+    if (!isClient && req.body.client_id !== undefined) {
+      updatePayload.client_id = Number(req.body.client_id);
+    }
+
+    await db.update(content_planner)
+      .set(updatePayload)
+      .where(eq(content_planner.id, rowId));
+
+    const joinedRow = await db.select({
+      id: content_planner.id,
+      user_id: content_planner.user_id,
+      client_id: content_planner.client_id,
+      post_date: content_planner.post_date,
+      content_pillar: content_planner.content_pillar,
+      boost: content_planner.boost,
+      concept: content_planner.concept,
+      text_on_design: content_planner.text_on_design,
+      design_description: content_planner.design_description,
+      caption: content_planner.caption,
+      notice: content_planner.notice,
+      scheduled_date: content_planner.scheduled_date,
+      title: content_planner.title,
+      content_type: content_planner.content_type,
+      description: content_planner.description,
+      status: content_planner.status,
+      created_at: content_planner.created_at,
+      client_name: users.full_name,
+      client_email: users.email
+    })
+    .from(content_planner)
+    .leftJoin(users, eq(content_planner.client_id, users.id))
+    .where(eq(content_planner.id, rowId));
+
+    res.json({ data: joinedRow });
+  } catch (error: any) {
+    console.error("Update content planner error:", error);
+    res.status(500).json({ error: 'Failed to update: ' + error.message });
   }
 });
 
-app.delete('/api/content_planner/:id', async (req, res) => {
+app.delete('/api/content_planner/:id', authenticateToken, async (req: any, res: any) => {
   try {
-    await db.delete(content_planner).where(eq(content_planner.id, req.params.id));
+    const isClient = req.user.role !== 'admin';
+    const rowId = req.params.id;
+
+    if (isClient) {
+      const existing = await db.query.content_planner.findFirst({
+        where: eq(content_planner.id, rowId)
+      });
+      if (!existing || existing.client_id !== req.user.id) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+    }
+
+    await db.delete(content_planner).where(eq(content_planner.id, rowId));
     res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to delete' });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to delete: ' + error.message });
   }
 });
 
