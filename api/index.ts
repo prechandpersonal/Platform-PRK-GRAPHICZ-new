@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import { db } from '../src/db/index';
-import { content_planner, requests, contact_submissions, users } from '../src/db/schema';
+import { db } from '../src/db/index.js';
+import { content_planner, requests, contact_submissions, users } from '../src/db/schema.js';
 import { eq, desc } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
