@@ -219,11 +219,15 @@ const AdminDashboard = () => {
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-black/5 flex-col transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0 flex' : '-translate-x-full md:flex'}`}>
         <div className="p-6 border-b border-black/5 flex items-center justify-between">
-          <Logo />
+          <div className="flex flex-col gap-1">
+            {user?.role && (
+              <span className="px-2 py-0.5 bg-brand-primary text-brand-secondary text-[8px] font-black uppercase tracking-tighter rounded-md w-fit">
+                {user.role === 'super_admin' ? 'SUPER ADMIN' : 'ADMIN'}
+              </span>
+            )}
+            <Logo />
+          </div>
           <div className="flex items-center gap-2">
-            <span className="px-2 py-1 bg-brand-primary text-brand-secondary text-[8px] font-black uppercase tracking-tighter rounded-md">
-              {user?.role === 'super_admin' ? 'Super Admin' : 'Admin'}
-            </span>
             <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden p-2 text-black/40 hover:text-black">
               <X size={20} />
             </button>
