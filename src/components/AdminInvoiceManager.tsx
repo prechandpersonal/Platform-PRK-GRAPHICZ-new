@@ -112,7 +112,7 @@ export default function AdminInvoiceManager() {
                 <td className="py-4 font-medium text-sm text-black/60">
                   {invoice.invoice_number}
                 </td>
-                <td className="py-4 font-bold">${(invoice.amount / 100).toFixed(2)}</td>
+                <td className="py-4 font-bold">${(invoice.amount / 100).toFixed(2)} USD</td>
                 <td className="py-4 font-medium text-black/60">
                   {format(new Date(invoice.created_at), 'MMM d, yyyy')}
                 </td>

@@ -272,7 +272,7 @@ export const AdminClients: React.FC = () => {
                 >
                   <option value="">Geen package gekoppeld</option>
                   {packages.map(p => (
-                    <option key={p.id} value={p.id.toString()}>{p.name} (€{(p.price / 100).toFixed(2)}/m)</option>
+                    <option key={p.id} value={p.id.toString()}>{p.name} (${(p.price / 100).toFixed(2)} USD/m)</option>
                   ))}
                 </select>
               </div>

@@ -90,7 +90,7 @@ export default function ClientUploadedInvoicesList({ refreshTrigger }: ClientUpl
                 <td className="py-4 font-medium text-black/60">
                   {format(new Date(invoice.created_at), 'MMM d, yyyy')}
                 </td>
-                <td className="py-4 font-bold">${invoice.amount.toFixed(2)}</td>
+                <td className="py-4 font-bold">${invoice.amount.toFixed(2)} USD</td>
                 <td className="py-4">
                   <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${getStatusColor(invoice.status)}`}>
                     {invoice.status}

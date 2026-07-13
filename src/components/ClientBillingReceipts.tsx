@@ -103,7 +103,7 @@ export const ClientBillingReceipts: React.FC = () => {
         <div className="bg-white p-6 rounded-3xl border border-black/5 shadow-sm flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-[10px] font-bold uppercase tracking-widest text-black/40">Totaal Voldaan</p>
-            <p className="text-2xl font-extrabold text-black/80">€{paidSum.toFixed(2)}</p>
+            <p className="text-2xl font-extrabold text-black/80">${paidSum.toFixed(2)} USD</p>
           </div>
           <div className="w-12 h-12 bg-green-50 text-green-500 rounded-2xl flex items-center justify-center">
             <CheckCircle size={20} />
@@ -114,7 +114,7 @@ export const ClientBillingReceipts: React.FC = () => {
         <div className="bg-white p-6 rounded-3xl border border-black/5 shadow-sm flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-[10px] font-bold uppercase tracking-widest text-black/40">Openstaand Saldo</p>
-            <p className="text-2xl font-extrabold text-black/80">€{pendingSum.toFixed(2)}</p>
+            <p className="text-2xl font-extrabold text-black/80">${pendingSum.toFixed(2)} USD</p>
           </div>
           <div className="w-12 h-12 bg-yellow-50 text-yellow-600 rounded-2xl flex items-center justify-center">
             <Clock size={20} />
@@ -125,7 +125,7 @@ export const ClientBillingReceipts: React.FC = () => {
         <div className="bg-white p-6 rounded-3xl border border-black/5 shadow-sm flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-[10px] font-bold uppercase tracking-widest text-black/40">Achterstallig</p>
-            <p className="text-2xl font-extrabold text-red-600">€{overdueSum.toFixed(2)}</p>
+            <p className="text-2xl font-extrabold text-red-600">${overdueSum.toFixed(2)} USD</p>
           </div>
           <div className="w-12 h-12 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center">
             <AlertTriangle size={20} />
@@ -190,7 +190,7 @@ export const ClientBillingReceipts: React.FC = () => {
                 <div className="text-left md:text-right">
                   <p className="text-[10px] font-bold uppercase tracking-widest text-black/30">Bedrag</p>
                   <p className="text-lg font-extrabold text-black/80 mt-0.5">
-                    €{(invoice.amount / 100).toFixed(2)}
+                    ${(invoice.amount / 100).toFixed(2)} USD
                   </p>
                 </div>
 

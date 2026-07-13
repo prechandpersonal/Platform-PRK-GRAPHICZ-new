@@ -116,7 +116,7 @@ const Pricing = () => {
         <div className="mt-16 max-w-4xl mx-auto text-center">
           <p className="text-sm text-black/50 leading-relaxed font-medium italic">
             <span className="font-bold uppercase tracking-wider not-italic mr-1">Disclaimer:</span>
-            Our pricing is exclusively in United States Dollars (USD). When making payments from Suriname, your bank or Mopé will convert your Surinamese Dollars (SRD) to USD at their prevailing exchange rate. Please note that this exchange rate is flexible and may fluctuate, impacting the final SRD amount you are charged.
+            Our pricing is exclusively in United States Dollars (USD).
           </p>
         </div>
       </div>

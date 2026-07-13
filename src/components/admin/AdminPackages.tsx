@@ -178,7 +178,7 @@ export const AdminPackages: React.FC = () => {
             {/* Price section */}
             <div className="border-t border-black/5 pt-6">
               <p className="text-3xl font-extrabold text-black/80">
-                €{(pkg.price / 100).toFixed(2)}
+                ${(pkg.price / 100).toFixed(2)} USD
                 <span className="text-xs text-black/40 font-bold uppercase tracking-wider ml-1">/ maand</span>
               </p>
             </div>
@@ -225,7 +225,7 @@ export const AdminPackages: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-black/40 mb-2">Prijs (€ / m)</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-black/40 mb-2">Prijs ($ / m)</label>
                   <input 
                     type="number" 
                     required

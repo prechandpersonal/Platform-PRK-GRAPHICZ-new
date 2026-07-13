@@ -259,7 +259,7 @@ export const ClientOverview: React.FC<ClientOverviewProps> = ({ onNavigate }) =>
                 </div>
                 <div className="flex items-center gap-4">
                   <span className="text-xl font-extrabold text-black/80">
-                    €{(latestInvoice.amount / 100).toFixed(2)}
+                    ${(latestInvoice.amount / 100).toFixed(2)} USD
                   </span>
                   <button 
                     onClick={() => onNavigate('billing')}

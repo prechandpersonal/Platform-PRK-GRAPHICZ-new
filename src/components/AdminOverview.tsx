@@ -19,7 +19,7 @@ interface Stats {
   pendingRequests: number;
   completedRequests: number;
   totalInvoices: number;
-  totalRevenue: number; // in EUR
+  totalRevenue: number; // in USD
 }
 
 interface ActivityLog {
@@ -129,7 +129,7 @@ export const AdminOverview: React.FC = () => {
         <div className="bg-white p-6 rounded-3xl border border-black/5 shadow-sm flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-[10px] font-bold uppercase tracking-widest text-black/40">Totaal Omzet</p>
-            <p className="text-3xl font-extrabold text-green-600">€{stats?.totalRevenue.toFixed(2)}</p>
+            <p className="text-3xl font-extrabold text-green-600">${stats?.totalRevenue.toFixed(2)} USD</p>
           </div>
           <div className="w-12 h-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center">
             <Euro size={20} />
