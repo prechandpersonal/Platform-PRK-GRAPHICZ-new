@@ -268,7 +268,7 @@ const AdminDashboard = () => {
             }`}
           >
             <Users size={18} />
-            User Management
+            Client Management
           </button>
           <Link 
             to="/dashboard"
@@ -303,7 +303,7 @@ const AdminDashboard = () => {
               <Menu size={24} />
             </button>
             <h1 className="text-3xl font-bold tracking-tight">
-              {activeTab === 'overview' ? 'Manage Requests' : activeTab === 'messages' ? 'Contact Inquiries' : activeTab === 'invoices' ? 'Invoice Management' : activeTab === 'planner' ? 'Content Planner' : 'User Management'}
+              {activeTab === 'overview' ? 'Manage Requests' : activeTab === 'messages' ? 'Contact Inquiries' : activeTab === 'invoices' ? 'Invoice Management' : activeTab === 'planner' ? 'Content Planner' : 'Client Management'}
             </h1>
           </div>
           <div className="flex items-center gap-4 w-full md:w-auto">
@@ -331,7 +331,7 @@ const AdminDashboard = () => {
                     <TrendingUp size={12} /> +12%
                   </span>
                 </div>
-                <h3 className="text-black/40 text-sm font-bold uppercase tracking-widest mb-1">Total Users</h3>
+                <h3 className="text-black/40 text-sm font-bold uppercase tracking-widest mb-1">Total Clients</h3>
                 <p className="text-3xl font-bold">{stats?.totalUsers.count || 0}</p>
               </div>
               <div className="bg-white p-6 rounded-3xl border border-black/5 shadow-sm">
@@ -528,13 +528,13 @@ const AdminDashboard = () => {
           /* Users Table */
           <div className="bg-white rounded-3xl border border-black/5 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-black/5">
-              <h2 className="font-bold text-xl">Registered Users</h2>
+              <h2 className="font-bold text-xl">Registered Clients</h2>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
                   <tr className="bg-black/[0.02] text-[10px] font-bold uppercase tracking-widest text-black/40">
-                    <th className="px-6 py-4">User</th>
+                    <th className="px-6 py-4">Client</th>
                     <th className="px-6 py-4">Role</th>
                     <th className="px-6 py-4">Subscription</th>
                     <th className="px-6 py-4">Verified</th>
@@ -706,7 +706,7 @@ const AdminDashboard = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="relative w-full max-w-lg bg-white p-10 rounded-3xl shadow-2xl"
           >
-            <h2 className="text-2xl font-bold mb-2">Edit User</h2>
+            <h2 className="text-2xl font-bold mb-2">Edit Client</h2>
             <p className="text-black/40 text-sm mb-8 font-medium">{selectedUser.email}</p>
             
             <div className="space-y-6">

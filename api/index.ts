@@ -339,6 +339,7 @@ app.post('/api/sync-user', async (req, res) => {
 app.get('/api/users', async (req, res) => {
   try {
     const data = await db.query.users.findMany({
+      where: eq(users.role, 'client'),
       orderBy: desc(users.created_at),
     });
     const sanitizedData = data.map(user => {
