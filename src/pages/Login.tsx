@@ -47,7 +47,7 @@ const Login = () => {
       const { data } = dataResponse;
 
       // Make sure admin logs in via client portal if they haven't explicitly set their role to admin and the role isn't admin
-      if (loginType === 'admin' && data.user.role !== 'admin') {
+      if (loginType === 'admin' && data.user.role !== 'admin' && data.user.role !== 'super_admin') {
         throw new Error('This account does not have admin privileges');
       }
       if (loginType === 'client' && data.user.role === 'admin') {
