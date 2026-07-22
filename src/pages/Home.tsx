@@ -139,7 +139,7 @@ const Home = () => {
             Ready to Scale Your Business?
           </h2>
           <p className="text-xl text-brand-secondary/60 mb-12 max-w-2xl mx-auto">
-            Partner with PRK Graphicz today and experience the power of strategic branding and professional digital solutions.
+            Partner with P.R.K Graphicz today and experience the power of strategic branding and professional digital solutions.
           </p>
           <Link
             to="/register"

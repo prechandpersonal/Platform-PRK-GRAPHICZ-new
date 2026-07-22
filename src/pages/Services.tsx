@@ -1,7 +1,7 @@
 import React from 'react';
 import Layout from '../components/Layout';
 import { motion } from 'motion/react';
-import { Palette, Share2, Zap, Rocket, Monitor, Image as ImageIcon, Layers, PenTool } from 'lucide-react';
+import { Palette, Share2, Zap, Rocket, Monitor, Image as ImageIcon, Layers, PenTool, ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Services = () => {
@@ -26,6 +26,51 @@ const Services = () => {
     },
   ];
 
+  const projects = [
+    {
+      id: 1,
+      title: 'Aura Skincare',
+      category: 'Brand Identity & Packaging',
+      image: 'https://images.unsplash.com/photo-1600132806370-bf17e65e942f?q=80&w=2940&auto=format&fit=crop',
+      size: 'large'
+    },
+    {
+      id: 2,
+      title: 'Fintech Dashboard UI',
+      category: 'Web Design & UI/UX',
+      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2940&auto=format&fit=crop',
+      size: 'small'
+    },
+    {
+      id: 3,
+      title: 'Nordic Roast Coffee',
+      category: 'Brand Identity',
+      image: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?q=80&w=2942&auto=format&fit=crop',
+      size: 'medium'
+    },
+    {
+      id: 4,
+      title: 'Urban Architecture',
+      category: 'Editorial Design',
+      image: 'https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=2940&auto=format&fit=crop',
+      size: 'small'
+    },
+    {
+      id: 5,
+      title: 'Flow App',
+      category: 'Mobile App Design',
+      image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2874&auto=format&fit=crop',
+      size: 'medium'
+    },
+    {
+      id: 6,
+      title: 'Lumina Digital',
+      category: 'Creative Direction',
+      image: 'https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?q=80&w=2940&auto=format&fit=crop',
+      size: 'large'
+    }
+  ];
+
   return (
     <Layout>
       <section className="pt-32 pb-24 px-6">
@@ -36,7 +81,7 @@ const Services = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-5xl md:text-7xl font-bold tracking-tight mb-8 text-brand-primary"
             >
-              Our Solutions
+              Our Solutions & <span className="text-brand-secondary font-display uppercase tracking-tighter">Work</span>
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
@@ -63,6 +108,60 @@ const Services = () => {
                 </div>
                 <h3 className="text-2xl font-bold mb-4">{service.title}</h3>
                 <p className="text-black/70 leading-relaxed">{service.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Portfolio Section */}
+      <section className="py-24 px-6 bg-[#fcfcfc]" id="portfolio">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-brand-primary mb-6">Concept Portfolio</h2>
+            <p className="text-xl text-black/60 max-w-2xl mx-auto">
+              A curated collection of concept projects showcasing our strategic approach to branding, digital design, and visual storytelling.
+            </p>
+          </div>
+
+          {/* Masonry/Bento Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[300px]">
+            {projects.map((project, index) => (
+              <motion.div
+                key={project.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className={`relative group rounded-3xl overflow-hidden cursor-pointer
+                  ${project.size === 'large' ? 'md:col-span-2 lg:col-span-2 row-span-2' : ''}
+                  ${project.size === 'medium' ? 'md:col-span-1 lg:col-span-1 row-span-2' : ''}
+                  ${project.size === 'small' ? 'md:col-span-1 lg:col-span-1 row-span-1' : ''}
+                `}
+              >
+                <img 
+                  src={project.image} 
+                  alt={project.title} 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                
+                <div className="absolute bottom-0 left-0 right-0 p-8 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <p className="text-brand-secondary text-sm font-bold tracking-widest uppercase mb-2">
+                        {project.category}
+                      </p>
+                      <h3 className="text-2xl font-bold text-white">
+                        {project.title}
+                      </h3>
+                    </div>
+                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center transform group-hover:rotate-45 transition-transform duration-500">
+                      <ArrowUpRight size={24} className="text-brand-primary" />
+                    </div>
+                  </div>
+                </div>
               </motion.div>
             ))}
           </div>

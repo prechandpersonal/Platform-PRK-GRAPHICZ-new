@@ -35,7 +35,7 @@ const Logo: React.FC<LogoProps> = ({ className, variant = 'full' }) => {
     <div className={cn("flex items-center", className)}>
       <img 
         src={logoUrl} 
-        alt="PRK Graphicz" 
+        alt="P.R.K Graphicz" 
         className="h-24 w-auto object-contain"
         onError={(e) => {
           const target = e.target as HTMLImageElement;
@@ -44,7 +44,7 @@ const Logo: React.FC<LogoProps> = ({ className, variant = 'full' }) => {
             target.parentElement.innerHTML = `
               <div class="flex items-center gap-2">
                 <div class="w-16 h-16 bg-brand-primary text-brand-secondary rounded-lg flex items-center justify-center font-bold text-2xl">P</div>
-                <span class="font-bold text-2xl tracking-tight text-brand-primary uppercase font-display">PRK GRAPHICZ</span>
+                <span class="font-bold text-2xl tracking-tight text-brand-primary uppercase font-display">P.R.K GRAPHICZ</span>
               </div>
             `;
           }

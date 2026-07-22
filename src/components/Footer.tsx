@@ -99,7 +99,7 @@ const Footer = () => {
 
       <div className="max-w-7xl mx-auto pt-12 border-t border-black/5 flex flex-col md:flex-row items-center justify-between gap-6">
         <p className="text-xs text-black/40 font-medium">
-          © {currentYear} PRK GRAPHICZ. All rights reserved.
+          © {currentYear} P.R.K GRAPHICZ. All rights reserved.
         </p>
       </div>
     </footer>

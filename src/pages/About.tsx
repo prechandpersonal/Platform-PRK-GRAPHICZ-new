@@ -19,10 +19,10 @@ const About = () => {
                 <span className="text-brand-secondary font-display uppercase tracking-tighter">Brands that Grow</span>
               </h1>
               <p className="text-xl text-black/80 leading-relaxed mb-8">
-                PRK Graphicz helps Small and Medium Enterprises (SMEs) build brands that generate growth, trust, and long-term success. Focus on scaling your business while we handle your strategic creative needs.
+                P.R.K Graphicz helps Small and Medium Enterprises (SMEs) build brands that generate growth, trust, and long-term success. Focus on scaling your business while we handle your strategic creative needs.
               </p>
               <p className="text-lg text-black/70 leading-relaxed">
-                Founded by Prechand Angoelal, PRK Graphicz was born out of a passion for creative problem-solving and a vision to make high-quality, professional branding and digital transformation accessible to every growing enterprise.
+                Founded by Prechand Angoelal, P.R.K Graphicz was born out of a passion for creative problem-solving and a vision to make high-quality, professional branding and digital transformation accessible to every growing enterprise.
               </p>
             </motion.div>
             <motion.div
@@ -32,9 +32,9 @@ const About = () => {
               className="relative aspect-square bg-black/5 rounded-3xl overflow-hidden"
             >
               <img 
-                src="https://picsum.photos/seed/creative-studio/800/800" 
+                src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExM25jZHQ2N3hmZms3OGpyeXA3aXFuczh0Z3U2cWtqYTd0YTVsbm55cyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xUOxf4w6Nb5CPuOhQQ/giphy.gif" 
                 alt="Creative Studio" 
-                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                className="w-full h-full object-cover transition-all duration-700"
                 referrerPolicy="no-referrer"
               />
             </motion.div>

@@ -7,11 +7,11 @@ import { HelpCircle } from 'lucide-react';
 const Pricing = () => {
   const faqs = [
     {
-      q: 'How many designs can I request?',
+      q: 'We help you understand your design limits',
       a: 'Each subscription plan includes a specific monthly design allocation. You are welcome to submit your requests as needed throughout your billing cycle until you reach your plan’s limit. This allows you to pace your projects according to your brand’s content calendar.',
     },
     {
-      q: 'How fast will I receive my designs?',
+      q: 'We help you receive designs quickly',
       a: 'Efficiency is our priority. Most standard requests are delivered within 24–48 hours. More complex projects, such as full brand identity systems, may require additional time. To ensure total satisfaction, every design includes up to 3 rounds of revisions.',
     },
     {
